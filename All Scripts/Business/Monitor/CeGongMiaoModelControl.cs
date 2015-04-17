@@ -2,6 +2,7 @@
 using System.Collections;
 
 
+
 public class CeGongMiaoModelControl : MonoBehaviour {
 
     public GameObject jingGai;

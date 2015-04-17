@@ -44,6 +44,8 @@ public class SceneView : MonoBehaviour
 	public const float rotateConst  = 0.01f; 
 	public const float rotateXiShu = 0.02f;
 	// Update is called once per frame
+
+    private float currentDistance;
 	void Update()
 	{
 #if DEBUG
@@ -59,6 +61,8 @@ public class SceneView : MonoBehaviour
 					hitGameObj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 					hitGameObj.transform.localScale = Vector3.one;
 					hitGameObj.transform.position = hit.point;
+                    currentDistance = Vector3.Distance(Camera.main.transform.position, hitGameObj.transform.position);
+                    currentDistance = Mathf.Clamp(currentDistance, minDistance, maxDistance);
 				}
 			}
 
@@ -80,7 +84,7 @@ public class SceneView : MonoBehaviour
 				Debug.Log("rotate_y:"+Input.GetAxis("Mouse Y").ToString());
 
 				Quaternion rotation = Quaternion.Euler(rotate_y , rotate_x , 0);
-				Vector3 position = rotation * new Vector3(0 , 0 , -rotateConstDistance) + hitGameObj.transform.position;
+                Vector3 position = rotation * new Vector3(0, 0, -currentDistance) + hitGameObj.transform.position;
 				transform.rotation = rotation;
 				transform.position = position;
 				moveReference.transform.rotation = Quaternion.Euler(new Vector3(0 , transform.eulerAngles.y , 0));
@@ -200,7 +204,18 @@ public class SceneView : MonoBehaviour
 		tempCamera.position = initCameraPosition;
 		//tempCamera.eulerAngles = initEulerAngles;		//note:there is different between curren way and next way,but the two way has some associate
 		tempCamera.rotation = Quaternion.Euler(initEulerAngles);
+
+        ResetGameObject(moveReference);
+        ResetGameObject(rotateReference);
+        ResetGameObject(zoomReference);
 	}
+
+    void ResetGameObject(GameObject obj)
+    {
+        obj.transform.localPosition = Vector3.zero;
+        obj.transform.rotation = Quaternion.Euler(Vector3.zero);
+    }
+
 
 	GameObject moveReference;
 	GameObject rotateReference;
