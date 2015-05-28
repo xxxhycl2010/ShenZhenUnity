@@ -35,7 +35,7 @@ namespace ShenZhen.Monitor
         {
             Name = name;
             SelfObj = obj;
-            SelfObj.name = name;
+            SelfObj.name = id;
             ParentObj = parent;
             Id = id;
             Type = type;
@@ -91,8 +91,6 @@ namespace ShenZhen.Monitor
             return string.Format("typename:{0} ,selfobj name:{1} ,parent name:{2} ,child count:{3} ",
                 TypeName,SelfObj.name,ParentObj.name,PointList.Count);
         }
-
-
     }
 
     public class MonitorPointTree
@@ -120,6 +118,7 @@ namespace ShenZhen.Monitor
         #region 监测点树的操作
 
 
+   
         public State AddSingleMonitorTypeNode(ref List<MonitorType> typeList, string strType)
         {
             if (this.RootObj == null || strType == null)
@@ -130,6 +129,11 @@ namespace ShenZhen.Monitor
             if (newType.SelfObj == null)
                 return State.Error;
 
+            /*
+            if (GetAllMonitorTypeName(typeList).Contains(strType))
+                return State.OK;
+            */
+        
             newType.TypeName = strType;
             newType.SelfObj.name = strType;
             newType.SelfObj.transform.parent = this.RootObj.transform;
@@ -143,6 +147,40 @@ namespace ShenZhen.Monitor
 
         }
 
+
+        //所有的监测类型名称数据
+        public List<string> GetAllMonitorTypeName(List<MonitorType> typeList)
+        {
+            List<string> types = new List<string>();
+            int length = typeList.Count;
+            for (int i = 0; i < length; i++)
+            {
+                types.Add(typeList[i].TypeName);
+            }
+            return types;
+        }
+
+        //所有的监测点id数据
+        public List<string> GetAllMonitorPointId(ref List<MonitorType> typeList)
+        {
+            List<string> idList = new List<string>();
+            int length = typeList.Count;
+            for (int i = 0; i < length; i++)
+            {
+                List<MonitorPoint> temp = typeList[i].PointList;
+                int tempLength = temp.Count;
+                for (int j = 0; j < tempLength; j++)
+                {
+                    idList.Add(temp[j].Id);
+                }
+            }
+            return idList;
+        }
+        
+        //用于添加单个新的监测类型的数据处理
+      
+
+
         public State AddSingleMonitorPointNode(ref List<MonitorType> typeList,string name, string type, string id,ref GameObject selfObj, Vector3 position)
         {
 
@@ -151,7 +189,10 @@ namespace ShenZhen.Monitor
 
             if (name == null || type == null || id == null)
                 return State.Error;
-            for (int i = 0; i < typeList.Count; i++)
+            
+			int length = typeList.Count;
+
+			for (int i = 0; i < length; i++)
             {
                 if (typeList[i].TypeName.Equals(type))
                 {
@@ -166,10 +207,25 @@ namespace ShenZhen.Monitor
 
         }
 
+
         public void DestroyMonitorPointTree(ref List<MonitorType> typeList,ref GameObject rootObj)
         {
             GameObject.Destroy(rootObj);
             typeList.Clear();
+        }
+
+        public void RemoveSingleMonitorPoint(ref GameObject rootObj, string strId)
+        {
+            foreach (Transform child in rootObj.transform)
+            {
+                foreach (Transform item in child)
+                {
+                    if (item.gameObject.name.Equals(strId))
+                    {
+                        GameObject.Destroy(item.gameObject);
+                    }
+                }
+            }
         }
 
         public void SetAllMonitorPointState(ref GameObject rootObj,PointState state)
@@ -184,6 +240,7 @@ namespace ShenZhen.Monitor
             }
             
         }
+
 
         public void SetSingleMonitorTypeNodeState(ref GameObject rootObj, string strType, PointState state)
         {
@@ -292,6 +349,10 @@ namespace ShenZhen.Monitor
         {
             if (strType == null)
                 return State.Error;
+
+            if (GetAllLabelTypeName(typeLabelNodes).Contains(strType))
+                return State.OK;
+
             MonitorLabelTypeNode typeNode = new MonitorLabelTypeNode(strType);
             GameObject tempObj = typeNode.labelType;
             tempObj.transform.parent = this.rootOfMonitorLabel.transform;
@@ -304,6 +365,19 @@ namespace ShenZhen.Monitor
 
             return State.OK;
         }
+
+        public List<string> GetAllLabelTypeName(List<MonitorLabelTypeNode> typeLabelNodes)
+        {
+            List<string> labelTypes = new List<string>();
+            int length = typeLabelNodes.Count;
+            for (int i = 0; i < length; i++)
+            {
+                labelTypes.Add(typeLabelNodes[i].labelType.name);
+            }
+            return labelTypes;
+        }
+
+     
 
         public State AddSingleMonitorLabelNode(ref List<MonitorLabelTypeNode> typeLabelNodes,string type, string name, string id,ref GameObject selfObj,Color color)
         {
@@ -342,6 +416,20 @@ namespace ShenZhen.Monitor
                 GameObject.Destroy(child.gameObject);
             }
             typeLabelNodes.Clear();
+        }
+
+        public void RemoveSingleMonitorLabel(ref GameObject rootObj, string strId)
+        {
+            foreach (Transform child in rootObj.transform)
+            {
+                foreach (Transform item in child)
+                {
+                    if (item.gameObject.name.Equals(strId))
+                    {
+                        GameObject.Destroy(item.gameObject);
+                    }
+                }
+            }
         }
 
         public void SetAllMonitorLabelState(ref GameObject rootObj, PointState state)
@@ -426,6 +514,12 @@ namespace ShenZhen.Monitor
     {
         public string Type { set; get; }
         public List<MonitorPointData> monitorPoints;
+
+        public MonitorTypeData(string strType)
+        {
+            this.Type = strType;
+            this.monitorPoints = new List<MonitorPointData>();
+        }
 
         public MonitorTypeData(string type, List<MonitorPointData> monitorPoints)
         {

@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+
+using ShenZhen.Monitor;
 
 public class ChangeJieMian : MonoBehaviour {
 
@@ -52,35 +55,27 @@ public class ChangeJieMian : MonoBehaviour {
             if (firstItems[i].name.Equals(name))
             {
                 secondItems[i].SetActive(true);
+                if (i == 2)
+                    Application.ExternalCall("Monitor_Mgr");
                 break;
             }
         }
 
-        /*
-            switch (name)
-            {
-                case "Item1":
-                    secondItems[0].SetActive(true);
-                    break;
-                case "Item2":
-                    secondItems[1].SetActive(true);
-                    break;
-                case "Item3":
-                    secondItems[2].SetActive(true);
-                    break;
-                case "Item4":
-                    secondItems[3].SetActive(true);
-                    break;
-
-            }
-         * */
+     
     }
 
+    public MonitorControl monitorControl;
+    public CeGongMiaoModelControl ceGongMiaoModelControl;
     void OnClickBackButton(GameObject go)
     {
         go.transform.parent.gameObject.SetActive(false);
         firstItems[0].transform.parent.gameObject.SetActive(true);
         ResetFirstItemSprite();
+        if (go.transform.parent.name.Equals("SafetyJianCe"))
+        {
+            monitorControl.DestroyMonitorPointTree();
+            ceGongMiaoModelControl.SetJingGaiState(true);
+        }
     }
 
     void OnHoverSprite(GameObject go,bool isHover)
@@ -114,26 +109,6 @@ public class ChangeJieMian : MonoBehaviour {
             }
         }
 
-        /*
-        switch (objName)
-        {
-            case "Item1":
-                oldName = "工程简介";
-                newName = "工程简介2";
-                break;
-            case "Item2":
-                oldName = "安全";
-                newName = "安全2";
-                break;
-            case "Item3":
-                oldName = "计量";
-                newName = "计量2";
-                break;
-            case "Item4":
-                oldName = "进度";
-                newName = "进度2";
-                break;
-        }
-         * */
+      
     }
 }

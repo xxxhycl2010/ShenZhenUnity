@@ -4,14 +4,18 @@ using System.Collections;
 public class ReceiveMessageFormUnity : MonoBehaviour {
 
     public GameObject[] secondItemButton_monitor;
-	// Use this for initialization
+    
+	
+    // Use this for initialization
 	void Start () {
+        
         UIEventListener.Get(secondItemButton_monitor[0]).onClick = OnClickMonitorButton;
         UIEventListener.Get(secondItemButton_monitor[1]).onClick = OnClickMonitorButton;
         UIEventListener.Get(secondItemButton_monitor[2]).onClick = OnClickMonitorButton;
-		
+       
 	}
 
+ 
     void OnClickMonitorButton(GameObject go)
     {
         string name = go.name;

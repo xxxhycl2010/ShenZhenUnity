@@ -8,7 +8,7 @@ namespace ShenZhen.Monitor
 {
     public class MonitorLabel : MonoBehaviour
     {
-        private const string MODULEVALUE = "monitor";
+        private const string MODULEVALUE = "MonitorPnt_Info";
         // Use this for initialization
         void Start()
         {
@@ -21,11 +21,7 @@ namespace ShenZhen.Monitor
             Application.ExternalCall(MODULEVALUE, go.name);
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
+       
     }
 }
 

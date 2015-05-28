@@ -21,5 +21,5 @@ public class TestNguiScale : MonoBehaviour {
             go.GetComponent<UISprite>().spriteName = oldSpriteName;                          //"工程简介";
     }
 	
-	
+	    
 }

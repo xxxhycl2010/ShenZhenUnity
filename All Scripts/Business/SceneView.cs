@@ -1,5 +1,4 @@
-﻿#define DEBUG
-#undef TRACE
+﻿
 
 using UnityEngine;
 using System.Collections;
@@ -48,154 +47,213 @@ public class SceneView : MonoBehaviour
     private float currentDistance;
 	void Update()
 	{
-#if DEBUG
-		#region control rotate
-		if (target)
-		{
-			if (Input.GetMouseButtonDown(2))
-			{
-				Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-				RaycastHit hit;
-				if (Physics.Raycast(ray , out hit))
-				{
-					hitGameObj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-					hitGameObj.transform.localScale = Vector3.one;
-					hitGameObj.transform.position = hit.point;
-                    currentDistance = Vector3.Distance(Camera.main.transform.position, hitGameObj.transform.position);
-                    currentDistance = Mathf.Clamp(currentDistance, minDistance, maxDistance);
-				}
-			}
+     
+        ControlRotate();
+        ControlMove_mouse();
+        ControlMove_key();
 
-
-			if (Input.GetMouseButton(2))
-			{
-				isScrollWheel = false;
-				float xValue = Input.GetAxis("Mouse X");
-				float yValue = Input.GetAxis("Mouse Y");
-				if(Mathf.Abs(xValue) < rotateConst && Mathf.Abs(yValue)<rotateConst)
-				{
-					return;
-				}
-				
-				rotate_x += xValue * xSpeed * rotateXiShu;
-				rotate_y -= yValue * ySpeed * rotateXiShu;
-				rotate_y = Mathf.Clamp(rotate_y , yMinRotate , yMaxRotate);
-				Debug.Log("rotate_x:"+Input.GetAxis("Mouse X").ToString());
-				Debug.Log("rotate_y:"+Input.GetAxis("Mouse Y").ToString());
-
-				Quaternion rotation = Quaternion.Euler(rotate_y , rotate_x , 0);
-                Vector3 position = rotation * new Vector3(0, 0, -currentDistance) + hitGameObj.transform.position;
-				transform.rotation = rotation;
-				transform.position = position;
-				moveReference.transform.rotation = Quaternion.Euler(new Vector3(0 , transform.eulerAngles.y , 0));
-			}
-
-
-			if (Input.GetMouseButtonUp(2))
-			{
-				Destroy(hitGameObj);
-				isScrollWheel = true;
-			}
-		}
-		#endregion
-#endif
-#if DEBUG
-		#region  mouse left key control move
-		if (target)
-		{
-			controlObj = Camera.main.transform;
-			if (Input.GetMouseButton(0))
-			{
-
-				float xValue = Input.GetAxis("Mouse X");
-				float yValue = Input.GetAxis("Mouse Y");
-
-				if (xValue != 0)
-				{
-					controlObj.Translate(-xValue * Time.deltaTime * moveSpeed_mouse , 0 , 0 , moveReference.transform);
-				}
-
-				if (yValue != 0)
-				{
-					controlObj.Translate(0 , 0 , -yValue * Time.deltaTime * moveSpeed_mouse , moveReference.transform);
-				}
-
-			}
-		}
-
-		#endregion
-#endif
-		#region key control move
-		if (target)
-		{
-			controlObj = Camera.main.transform;
-
-			float xValue = Input.GetAxis("Horizontal");
-			float yValue = Input.GetAxis("Vertical");
-
-			if (xValue != 0)
-			{
-				controlObj.Translate(xValue * Time.deltaTime * moveSpeed_key , 0 , 0 , moveReference.transform);
-			}
-
-			if (yValue != 0)
-			{
-				controlObj.Translate(0 , 0 , yValue * Time.deltaTime * moveSpeed_key , moveReference.transform);
-			}
-
-
-		}
-		#endregion
 		zoomReference.transform.localPosition = Camera.main.transform.position;
 		zoomReference.transform.eulerAngles = Camera.main.transform.eulerAngles;
 	}
-	public float scrollConstValue = 100;
+
+    void ControlMove_mouse()
+    {
+        if (target)
+        {
+            controlObj = Camera.main.transform;
+            if (Input.GetMouseButton(0))
+            {
+
+                float xValue = Input.GetAxis("Mouse X");
+                float yValue = Input.GetAxis("Mouse Y");
+
+                if (xValue != 0)
+                {
+                    controlObj.Translate(-xValue * Time.deltaTime * moveSpeed_mouse, 0, 0, moveReference.transform);
+                }
+
+                if (yValue != 0)
+                {
+                    controlObj.Translate(0, 0, -yValue * Time.deltaTime * moveSpeed_mouse, moveReference.transform);
+                }
+
+            }
+        }
+    }
+
+    void ControlMove_key()
+    {
+        if (target)
+        {
+            controlObj = Camera.main.transform;
+
+            float xValue = Input.GetAxis("Horizontal");
+            float yValue = Input.GetAxis("Vertical");
+
+            if (xValue != 0)
+            {
+                controlObj.Translate(xValue * Time.deltaTime * moveSpeed_key, 0, 0, moveReference.transform);
+            }
+
+            if (yValue != 0)
+            {
+                controlObj.Translate(0, 0, yValue * Time.deltaTime * moveSpeed_key, moveReference.transform);
+            }
+
+
+        }
+    }
+
+    void ControlRotate()
+    {
+        if (target)
+        {
+            if (Input.GetMouseButtonDown(2))
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit))
+                {
+                    hitGameObj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                    hitGameObj.transform.localScale = Vector3.one;
+                    hitGameObj.transform.position = hit.point;
+                    currentDistance = Vector3.Distance(Camera.main.transform.position, hitGameObj.transform.position);
+                    currentDistance = Mathf.Clamp(currentDistance, minDistance, maxDistance);
+                }
+            }
+
+
+            if (Input.GetMouseButton(2))
+            {
+                isScrollWheel = false;
+                float xValue = Input.GetAxis("Mouse X");
+                float yValue = Input.GetAxis("Mouse Y");
+                if (Mathf.Abs(xValue) < rotateConst && Mathf.Abs(yValue) < rotateConst)
+                {
+                    return;
+                }
+
+                rotate_x += xValue * xSpeed * rotateXiShu;
+                rotate_y -= yValue * ySpeed * rotateXiShu;
+                rotate_y = Mathf.Clamp(rotate_y, yMinRotate, yMaxRotate);
+                Debug.Log("rotate_x:" + Input.GetAxis("Mouse X").ToString());
+                Debug.Log("rotate_y:" + Input.GetAxis("Mouse Y").ToString());
+
+                Quaternion rotation = Quaternion.Euler(rotate_y, rotate_x, 0);
+                Vector3 position = rotation * new Vector3(0, 0, -currentDistance) + hitGameObj.transform.position;
+                transform.rotation = rotation;
+                transform.position = position;
+                moveReference.transform.rotation = Quaternion.Euler(new Vector3(0, transform.eulerAngles.y, 0));
+            }
+
+
+            if (Input.GetMouseButtonUp(2))
+            {
+                Destroy(hitGameObj);
+                isScrollWheel = true;
+            }
+        }
+
+    
+    }
+
+    #region this is the another way ,but it is exist the bug, it need to modify
+    void CameraRotate()
+    {
+        if (Input.GetMouseButtonDown(2))
+        {
+            CameraDistance();
+            Debug.Log(m_distance);
+        }
+
+        if (Input.GetMouseButton(2))
+        {
+            CameraRotateAxis();
+            gameObject.transform.rotation = Quaternion.Euler(gameObject.transform.eulerAngles.x, gameObject.transform.eulerAngles.y, 0);
+            if (Input.GetAxis("Mouse X") != 0)
+                gameObject.transform.RotateAround(m_point, Vector3.up, Input.GetAxis("Mouse X"));
+            if (Input.GetAxis("Mouse Y") != 0)
+                gameObject.transform.RotateAround(m_point, m_rotateAxis, -Input.GetAxis("Mouse Y"));
+        }
+    }
+
+    float m_distance;
+    void CameraDistance()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
+        {
+            Debug.DrawLine(ray.origin, hit.point, Color.red, 2);
+            m_point = hit.point;
+            //Debug.Log(hit.point);
+        }
+        else
+            m_point = this.transform.position + new Vector3(0, 100, 100);
+
+        m_distance = Vector3.Distance(Camera.main.transform.position, m_point);
+
+    }
+
+    Vector3 m_point;
+    Vector3 m_rotateAxis;
+    void CameraRotateAxis()
+    {
+        Vector3 v1 = Camera.main.transform.position - m_point;
+        Vector3 v2 = (new Vector3(Camera.main.transform.position.x, m_point.y, Camera.main.transform.position.z)) - m_point;
+        m_rotateAxis = Vector3.Cross(v2, v1);
+        Debug.Log(m_rotateAxis);
+    }
+    #endregion
+
+    public float scrollConstValue = 100;
+
+
+    void ControlZoom()
+    {
+      
+        if (target)
+        {
+            controlObj = zoomReference.transform;
+            if (Event.current.type == EventType.ScrollWheel)
+            {
+
+                if (isScrollWheel)
+                {
+                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    RaycastHit hit;
+                    if (Physics.Raycast(ray, out hit))
+                    {
+                        lookPosition = hit.point;
+
+                    }
+
+                    float distance = Vector3.Distance(controlObj.position, lookPosition);
+                    Debug.Log("distance:" + distance);
+                    float xiShu = distance * 0.02f;
+                    float scrollValue = Input.GetAxis("Mouse ScrollWheel") * xiShu * Time.deltaTime * scrollConstValue;
+                    controlObj.Translate(0, 0, scrollValue, transform);
+                    if (controlObj.transform.position.y >= minDistance && controlObj.transform.position.y <= maxDistance)
+                    {
+                        Camera.main.transform.position = controlObj.position;
+                    }
+                }
+
+            }
+
+        }
+    }
+
 	void OnGUI()
 	{
-		#region control the zoom
-		if (target)
-		{
-			controlObj = zoomReference.transform;
-			if (Event.current.type == EventType.ScrollWheel)
-			{
-#if DEBUG
-				if(isScrollWheel)
-				{
-					Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-					RaycastHit hit;
-					if (Physics.Raycast(ray , out hit))
-					{
-						lookPosition = hit.point;
+        ControlZoom();
 
-					}
-
-					float distance = Vector3.Distance(controlObj.position , lookPosition);
-					Debug.Log("distance:" + distance);
-					float xiShu = distance * 0.02f;
-					float scrollValue = Input.GetAxis("Mouse ScrollWheel") * xiShu * Time.deltaTime * scrollConstValue;
-					controlObj.Translate(0 , 0 , scrollValue , transform);
-					if (controlObj.transform.position.y >= minDistance && controlObj.transform.position.y <= maxDistance)
-					{
-						Camera.main.transform.position = controlObj.position;
-					}
-				}
-
-#endif
-
-
-			}
-
-		}
-
-
-
-		#endregion
-
+        /*
         if (GUI.Button(new Rect(Screen.width - 120, 100, 120, 30), "resetMainCamera"))
 		{
 			InitEulerAndPosition();
 		}
-
+        */
 	}
 
 	void InitEulerAndPosition()

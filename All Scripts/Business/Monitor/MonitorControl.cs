@@ -26,27 +26,24 @@ namespace ShenZhen.Monitor
 
         private List<MonitorType> monitorTypeNodes;
 
-        public MonitorData monitorData; 
+        public MonitorData monitorData;
+
+        public AnalyseMonitorData analyseMonitorData;
+        private int layerNum_monitor;
 
         // Use this for initialization
         void Start()
         {
-         
+            layerNum_monitor = LayerMask.NameToLayer("Monitor");
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
-
-
-        public State InitMonitorPointData()
+   
+		public State InitMonitorPointData(string strValue)
         {
             //从winform向unity中传递监测点的数据处理
 
             #region test data code
-
+            /*
             monitorData = new MonitorData();
 
             MonitorPointData point1 = new MonitorPointData("001", "ce1", "red", new Vector3(-510.5763f, -9.872375f, -237.8817f));
@@ -85,9 +82,10 @@ namespace ShenZhen.Monitor
             monitorData.monitorData.Add(type3);
             
             
-
+            */
             #endregion
 
+            monitorData = analyseMonitorData.InitMonitorData(strValue);
 
             return State.OK;
             
@@ -105,9 +103,21 @@ namespace ShenZhen.Monitor
         }
 
         public CeGongMiaoModelControl ceGongMiaoModelControl;
-        public void CreateMonitorPointTree()
+
+		public void OpenJingGai()
+		{
+			ceGongMiaoModelControl.SetJingGaiState(false);
+		}
+
+		public void CloseJingGai()
+		{
+			ceGongMiaoModelControl.SetJingGaiState(true);
+					
+		}
+
+        public void CreateMonitorPointTree(string data_json)
         {
-            if (InitMonitorPointData() == State.Error)
+            if (InitMonitorPointData(data_json) == State.Error)
                 return;
 
             ceGongMiaoModelControl.SetJingGaiState(false);
@@ -118,23 +128,14 @@ namespace ShenZhen.Monitor
 
         }
 
-        private void AddAllMonitorTypeNodes()
+        public void AddSingleMonitorType(string strType)
         {
-            int length = typeList_data.Count;
-            for (int i = 0; i < length; i++)
-            {
-                if (monitorPointTree.AddSingleMonitorTypeNode(ref monitorTypeNodes, typeList_data[i]) == State.OK)
-                {
-
-                }
-                else
-                {
-                    Debug.Log("create fail ,type node name:" + typeList_data[i].ToString());
-                }
-            }
+            monitorPointTree.AddSingleMonitorTypeNode(ref monitorTypeNodes, strType);
+            monitorLabelTree.AddSingleTypeLabelNode(ref monitorLabelTypeNodes, strType);
         }
 
-        //添加所有监测类型节点
+      
+        //添加初始化时所有监测类型节点
         private void AddAllMonitorTypeNodes(ref MonitorData monitorData_ref)
         {
             int length = monitorData_ref.monitorData.Count;
@@ -180,6 +181,50 @@ namespace ShenZhen.Monitor
         }
 
 
+
+		//添加单个新的监测点
+		public void AddMonitorPoint(string strValue)
+		{
+
+			//TODO:单个新的监测类型数据的处理
+
+            //MonitorPointData newPointData = new MonitorPointData("1234", "test add 1", "支撑轴力", new Vector3(-386.9993f, -6.399696f, -322.7383f));        //this is test data for test add monitor point
+         
+            MonitorPointData newPointData = analyseMonitorData.SinglePointData(strValue);
+            //Debug.Log("new point info:" + newPointData.ToString());
+            GameObject selfObj = InstantiatePoint(newPointData.Id);
+            if (monitorPointTree.AddSingleMonitorPointNode(ref monitorTypeNodes, newPointData.Name, newPointData.Type, newPointData.Id,
+                       ref selfObj, newPointData.Position) == State.OK)
+            {
+                GameObject newObj = InstantiateLabel(newPointData.Id);
+                if (monitorLabelTree.AddSingleMonitorLabelNode(ref monitorLabelTypeNodes, newPointData.Type, newPointData.Name,
+                    newPointData.Id, ref newObj, PointColor.GetCorrespondColor(8)) == State.OK)
+                {
+                    MonitorPointLabel headLabel = selfObj.AddComponent<MonitorPointLabel>();
+                    headLabel.headLabel = newObj.transform;
+
+
+                }
+            }
+
+
+
+		}
+
+		public void RemoveMonitorPoint(string strValue)
+		{
+				//TODO:这里的监测点数据操作需要完善
+            MonitorPointData newPointData = analyseMonitorData.SinglePointData(strValue);
+
+            //string str = "8d7808b4-be29-45fb-8071-9ee4dbac0207";            //this is test code and data;
+
+            string str = newPointData.Id;
+            monitorPointTree.RemoveSingleMonitorPoint(ref rootOfMointorPoint, str);
+            monitorLabelTree.RemoveSingleMonitorLabel(ref rootOfMointorLabel, str);
+		
+		}
+
+
         //添加所有监测点的节点
         private void AddAllMonitorPointNodes()
         {
@@ -192,6 +237,7 @@ namespace ShenZhen.Monitor
                 for (int j = 0; j < len; j++)
                 {
                     GameObject selfObj = InstantiatePoint(temp[j].Id);
+                    selfObj.GetComponent<Renderer>().material.color = PointColor.GetCorrespondColor(i);
                     if (monitorPointTree.AddSingleMonitorPointNode(ref monitorTypeNodes, temp[j].Name, temp[j].Type, temp[j].Id,
                        ref selfObj, temp[j].Position) == State.OK)
                     {
@@ -252,7 +298,9 @@ namespace ShenZhen.Monitor
             newObj.name = id;
             newObj.transform.position = Vector3.zero;
             newObj.transform.localScale = Vector3.one;
-            newObj.AddComponent<MonitorLabel>();
+         
+            //newObj.AddComponent<MonitorLabel>();              //点击标签的时候发送id 给winform 
+
             return newObj;
         }
 
@@ -264,7 +312,7 @@ namespace ShenZhen.Monitor
             newObj.name = id;
             newObj.transform.position = Vector3.zero;
             newObj.transform.localScale = Vector3.one;
-
+            newObj.layer = layerNum_monitor;
             return newObj;
 
         }

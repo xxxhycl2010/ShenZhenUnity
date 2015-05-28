@@ -1,4 +1,4 @@
-﻿#define debug
+#define debug
 #undef trace
 
 using UnityEngine;
@@ -13,13 +13,13 @@ namespace ShenZhenTest.Monitor
     {
         public MonitorControl monitorControl;
 
-        public MonitorData monitorData = new MonitorData();
+        //public MonitorData monitorData = new MonitorData();
         // Use this for initialization
         void Start()
         {
 
             #region test monitor data ,it is for test
-
+            /*
             MonitorPointData point1 = new MonitorPointData("001", "ce1", "red", new Vector3(-510.5763f, -9.872375f, -237.8817f));
             MonitorPointData point2 = new MonitorPointData("002", "ce2", "red", new Vector3(-484.5013f, -9.872375f, -237.8817f));
             MonitorPointData point3 = new MonitorPointData("003", "ce3", "red", new Vector3(-472.0671f, -9.872375f, -254.3741f));
@@ -56,7 +56,7 @@ namespace ShenZhenTest.Monitor
             monitorData.monitorData.Add(type3);
 
 
-
+            */
             #endregion
 
 
@@ -71,7 +71,7 @@ namespace ShenZhenTest.Monitor
 
         }
 
-#if trace
+#if debug
         bool isred = true;
         bool isopen = true;
         void OnGUI()
@@ -83,7 +83,7 @@ namespace ShenZhenTest.Monitor
                 monitorControl.typeList_data = typelist;
                 monitorControl.monitorData = this.monitorData;
                  * */
-                monitorControl.CreateMonitorPointTree();
+                monitorControl.CreateMonitorPointTree("");
             }
 
             if (GUILayout.Button("destroy monitor tree"))
@@ -133,6 +133,21 @@ namespace ShenZhenTest.Monitor
             if (GUILayout.Button("reset all point"))
             {
                 monitorControl.ResetAllMonitorPoint();
+            }
+
+            if (GUILayout.Button("add single monitor type node"))
+            {
+                monitorControl.AddSingleMonitorType("yellow");
+            }
+
+            if (GUILayout.Button("add monitor point"))
+            {
+                monitorControl.AddMonitorPoint("");
+            }
+
+            if (GUILayout.Button("remove monitor point"))
+            {
+                monitorControl.RemoveMonitorPoint("");
             }
         }
 #endif
