@@ -26,6 +26,15 @@ public class DengLu : MonoBehaviour {
 	
 	}
 
+    void Update() 
+    {
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            ClickDengLuButton(dengLuButton);
+        }
+
+    }
+
     void ClickDengLuButton(GameObject go)
     {
         bool isOk = false;

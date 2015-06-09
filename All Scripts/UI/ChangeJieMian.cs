@@ -13,6 +13,8 @@ public class ChangeJieMian : MonoBehaviour {
     public string[] oldSprites;
     public string[] newSprites;
 
+    public string[] messages;
+
 
 	// Use this for initialization
 	void Start () {
@@ -55,8 +57,8 @@ public class ChangeJieMian : MonoBehaviour {
             if (firstItems[i].name.Equals(name))
             {
                 secondItems[i].SetActive(true);
-                if (i == 2)
-                    Application.ExternalCall("Monitor_Mgr");
+                Application.ExternalCall(messages[i]);
+               
                 break;
             }
         }
@@ -64,7 +66,7 @@ public class ChangeJieMian : MonoBehaviour {
      
     }
 
-    public MonitorControl monitorControl;
+    //public MonitorControl monitorControl;
     public CeGongMiaoModelControl ceGongMiaoModelControl;
     void OnClickBackButton(GameObject go)
     {
@@ -73,7 +75,7 @@ public class ChangeJieMian : MonoBehaviour {
         ResetFirstItemSprite();
         if (go.transform.parent.name.Equals("SafetyJianCe"))
         {
-            monitorControl.DestroyMonitorPointTree();
+            //monitorControl.DestroyMonitorPointTree();
             ceGongMiaoModelControl.SetJingGaiState(true);
         }
     }

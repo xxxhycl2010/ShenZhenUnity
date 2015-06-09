@@ -21,9 +21,9 @@ namespace ShenZhen.Monitor
             switch (index)
             { 
                 case 0:
-                    return Color.red;
-                case 1:
                     return Color.green;
+                case 1:
+                    return Color.yellow;
                 case 2:
                     return Color.blue;
                 case 3:
@@ -35,9 +35,9 @@ namespace ShenZhen.Monitor
                 case 6:
                     return Color.white;
                 case 7:
-                    return Color.yellow;
+                    return Color.red;
                 default:
-                    return Color.white;
+                    return Color.green;
             }
             
         }

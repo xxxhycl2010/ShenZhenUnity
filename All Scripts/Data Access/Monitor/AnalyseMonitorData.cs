@@ -1,4 +1,7 @@
-﻿#define debug
+﻿#define local
+
+
+#define tempSave
 
 using UnityEngine;
 using System.Collections;
@@ -6,26 +9,29 @@ using System.Collections.Generic;
 
 namespace ShenZhen.Monitor
 {
+    /*
     public class PointData_json
     {
-        public string RowId { set; get; }
-        public string MpName { set; get; }
-        public string MpDeep { set; get; }
-        public string MRowId { set; get; }
-        public string MpSort { set; get; }
-        public float MpX { set; get; }
-        public float MpY { set; get; }
-        public float MpZ { set; get; }
-        public string PRowId { set; get; }
-        public string MonitorState { set; get; }
-        public string MonitorType { set; get; }
+        
+        public int PntId { set; get; }
+        public int CusItemId { set; get; }
+        public int SysItemId { set; get; }
+        public string Name { set; get; }
+        public float pntX { set; get; }
+        public float pntY { set; get; }
+        public float pntZ { set; get; }
+        public float Deep { set; get; }
+        public string CreateTime { set; get; }
+        public string RemoveTime { set; get; }
+        public string Remark { set; get; }
 
     }
 
-
+    */
     public class AnalyseMonitorData : MonoBehaviour
     {
 
+        /*
         public MonitorData m_monitorData;
         List<PointData_json> initJsonData = new List<PointData_json>();
         public TestMonitorPoint testMonitorPoint;
@@ -42,35 +48,39 @@ namespace ShenZhen.Monitor
 
         }
 
+        string Strdata = null;
         void StartAnalyseInitData(string strValue)
         {
             m_monitorData = new MonitorData();
             initJsonData.Clear();
-#if debug
-  
-            TextAsset testObj = Resources.Load("Noname1") as TextAsset;
+#if local
+
+            TextAsset testObj = Resources.Load("json_data") as TextAsset;
             Nii.JSON.JSONArray jsonData = new Nii.JSON.JSONArray(testObj.text);
             
 #else
 
             Nii.JSON.JSONArray jsonData = new Nii.JSON.JSONArray(strValue);
 #endif
-            //Debug.Log("data;" + jsonData);
+            Debug.Log("data;" + jsonData);
+            Strdata = jsonData.ToString();
             int length = jsonData.Count;
+            PointData_json tempData = null;
+
             for (int i = 0; i < length; i++)
             {
-                PointData_json tempData = new PointData_json();
-                tempData.RowId = jsonData.getJSONObject(i).getString("RowId");
-                tempData.MpName = jsonData.getJSONObject(i).getString("MpName");
-                tempData.MpDeep = jsonData.getJSONObject(i).getString("MpDeep");
-                tempData.MRowId = jsonData.getJSONObject(i).getString("MRowId");
-                tempData.MpSort = jsonData.getJSONObject(i).getString("MpSort");
-                tempData.MpX = float.Parse(jsonData.getJSONObject(i).getString("MpX"));
-                tempData.MpY = float.Parse(jsonData.getJSONObject(i).getString("MpY"));
-                tempData.MpZ = float.Parse(jsonData.getJSONObject(i).getString("MpZ"));
-                tempData.PRowId = jsonData.getJSONObject(i).getString("PRowId");
-                tempData.MonitorState = jsonData.getJSONObject(i).getString("MonitorState");
-                tempData.MonitorType = jsonData.getJSONObject(i).getString("MonitorType");
+                tempData = new PointData_json();
+                tempData.PntId = int.Parse(  jsonData.getJSONObject(i).getString("PntId"));
+                tempData.CusItemId =int.Parse( jsonData.getJSONObject(i).getString("CusItemId"));
+                tempData.SysItemId = int.Parse( jsonData.getJSONObject(i).getString("SysItemId"));
+                tempData.Name = jsonData.getJSONObject(i).getString("Name");
+                tempData.pntX = float.Parse( jsonData.getJSONObject(i).getString("pntX"));
+                tempData.pntY = float.Parse(jsonData.getJSONObject(i).getString("pntY"));
+                tempData.pntZ = float.Parse(jsonData.getJSONObject(i).getString("pntZ"));
+                tempData.Deep = float.Parse(jsonData.getJSONObject(i).getString("Deep"));
+                tempData.CreateTime = jsonData.getJSONObject(i).getString("CreateTime");
+                tempData.RemoveTime = jsonData.getJSONObject(i).getString("RemoveTime");
+                tempData.Remark = jsonData.getJSONObject(i).getString("Remark");
 
                 initJsonData.Add(tempData);    
             }
@@ -85,7 +95,7 @@ namespace ShenZhen.Monitor
             //添加所有的类型数据
             for (int i = 0; i < length; i++)
             {
-                string strType = initJsonData[i].MonitorType;
+                string strType = initJsonData[i].SysItemId.ToString();
                 if (!isContainType(strType))
                 {
                     MonitorTypeData monitorTypeData = new MonitorTypeData(strType);
@@ -102,10 +112,10 @@ namespace ShenZhen.Monitor
                 for (int j = 0; j < length; j++)
                 {
                    
-                    if (m_monitorData.monitorData[i].Type.Equals(initJsonData[j].MonitorType))
+                    if (m_monitorData.monitorData[i].Type.Equals(initJsonData[j].SysItemId.ToString()))
                     { 
-                        MonitorPointData newPoint = new MonitorPointData(initJsonData[j].RowId,
-                            initJsonData[j].MpName,initJsonData[j].MonitorType,testMonitorPoint.GetCorrespondPosition(j));
+                        MonitorPointData newPoint = new MonitorPointData(initJsonData[j].PntId.ToString(),
+                            initJsonData[j].Name, initJsonData[j].SysItemId.ToString(), testMonitorPoint.GetCorrespondPosition(j));
                         monitorPoints.Add(newPoint);
 
                     }
@@ -129,29 +139,17 @@ namespace ShenZhen.Monitor
             return false;
         }
 
+        
         PointData_json singleData;
         private void StartAnalyseSingleMonitorPointData(string strValue)
         {
-#if debug
+#if local
             TextAsset testObj = Resources.Load("test1") as TextAsset;
             Nii.JSON.JSONObject jsonData = new Nii.JSON.JSONObject(testObj.text);
 #else
             Nii.JSON.JSONObject jsonData = new Nii.JSON.JSONObject(strValue);
 #endif
-
-            singleData = new PointData_json();
-            singleData.RowId = jsonData.getString("RowId");
-            singleData.MpName = jsonData.getString("MpName");
-            singleData.MpDeep = jsonData.getString("MpDeep");
-            singleData.MRowId = jsonData.getString("MRowId");
-            singleData.MpSort = jsonData.getString("MpSort");
-            singleData.MpX = float.Parse( jsonData.getString("MpX"));
-            singleData.MpY = float.Parse( jsonData.getString("MpY"));
-            singleData.MpZ = float.Parse( jsonData.getString("MpZ"));
-            singleData.PRowId = jsonData.getString("PRowId");
-            singleData.MonitorState = jsonData.getString("MonitorState");
-            singleData.MonitorType = jsonData.getString("MonitorType");
-
+           
   
 
 
@@ -161,15 +159,25 @@ namespace ShenZhen.Monitor
         MonitorPointData newPoint;
         public MonitorPointData SinglePointData(string strValue)
         {
-            StartAnalyseSingleMonitorPointData(strValue);
+            
+            //StartAnalyseSingleMonitorPointData(strValue);
 
-             newPoint = new MonitorPointData(singleData.RowId, singleData.MpName, singleData.MonitorType, testMonitorPoint.GetCorrespondPosition(38));
-            return newPoint;
+            // newPoint = new MonitorPointData(singleData.RowId, singleData.MpName, singleData.MonitorType, testMonitorPoint.GetCorrespondPosition(38));
+            //return newPoint;
+             
+            return null;
         }
 
+        
+        //void OnGUI()
+        //{
+        //    GUI.Label(new Rect(10,Screen.height/2,Screen.width,100), "data:" + Strdata);
+        //}
+        
+        
+        */
 
     }
-
 }
 
 

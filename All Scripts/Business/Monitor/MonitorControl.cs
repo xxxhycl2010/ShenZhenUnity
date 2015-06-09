@@ -1,9 +1,14 @@
-﻿using UnityEngine;
+﻿//这个是旧的程序，里面的方法暂时不在使用，可以保留
+
+#undef tempSave
+
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace ShenZhen.Monitor
 {
+#if tempSave
     public enum PointState
     { 
         Close = 0,
@@ -13,18 +18,18 @@ namespace ShenZhen.Monitor
 
     public class MonitorControl : MonoBehaviour
     {
-        public GameObject rootOfMointorPoint;
-        public GameObject rootOfMointorLabel;
+        public GameObject rootOfMointorPoint = null;
+        public GameObject rootOfMointorLabel = null;
         public GameObject pointPrefab;
         public GameObject labelPrefab;
 
         public MonitorPointTree monitorPointTree;
         public MonitorLabelTree monitorLabelTree;
-        public List<MonitorLabelTypeNode> monitorLabelTypeNodes;
+        public List<MonitorLabelTypeNode> monitorLabelTypeNodes = null;
 
         public List<string> typeList_data = new List<string>();
 
-        private List<MonitorType> monitorTypeNodes;
+        private List<MonitorType> monitorTypeNodes = null;
 
         public MonitorData monitorData;
 
@@ -115,6 +120,7 @@ namespace ShenZhen.Monitor
 					
 		}
 
+        //通过监测点数据创建监测点树。
         public void CreateMonitorPointTree(string data_json)
         {
             if (InitMonitorPointData(data_json) == State.Error)
@@ -128,6 +134,7 @@ namespace ShenZhen.Monitor
 
         }
 
+        //添加单个监测类型
         public void AddSingleMonitorType(string strType)
         {
             monitorPointTree.AddSingleMonitorTypeNode(ref monitorTypeNodes, strType);
@@ -191,6 +198,8 @@ namespace ShenZhen.Monitor
             //MonitorPointData newPointData = new MonitorPointData("1234", "test add 1", "支撑轴力", new Vector3(-386.9993f, -6.399696f, -322.7383f));        //this is test data for test add monitor point
          
             MonitorPointData newPointData = analyseMonitorData.SinglePointData(strValue);
+            if (newPointData == null)
+                return;
             //Debug.Log("new point info:" + newPointData.ToString());
             GameObject selfObj = InstantiatePoint(newPointData.Id);
             if (monitorPointTree.AddSingleMonitorPointNode(ref monitorTypeNodes, newPointData.Name, newPointData.Type, newPointData.Id,
@@ -211,6 +220,7 @@ namespace ShenZhen.Monitor
 
 		}
 
+        //删除单个监测点
 		public void RemoveMonitorPoint(string strValue)
 		{
 				//TODO:这里的监测点数据操作需要完善
@@ -266,6 +276,7 @@ namespace ShenZhen.Monitor
             //AddAllMonitorLabelNodes();
         }
 
+        //添加监测标签节点
         private void AddAllMonitorLabelNodes()
         {
             int length = monitorData.monitorData.Count;
@@ -290,6 +301,7 @@ namespace ShenZhen.Monitor
             }
         }
 
+        //实例化监测标签
         private GameObject InstantiateLabel(string id)
         {
             GameObject newObj = Instantiate(labelPrefab) as GameObject;
@@ -299,11 +311,12 @@ namespace ShenZhen.Monitor
             newObj.transform.position = Vector3.zero;
             newObj.transform.localScale = Vector3.one;
          
-            //newObj.AddComponent<MonitorLabel>();              //点击标签的时候发送id 给winform 
+ 
 
             return newObj;
         }
 
+        //实例化监测点
         private GameObject InstantiatePoint(string id)
         {
             GameObject newObj = Instantiate(pointPrefab) as GameObject;
@@ -317,14 +330,35 @@ namespace ShenZhen.Monitor
 
         }
 
+        //销毁监测点树
         public void DestroyMonitorPointTree()
         {
+            if (monitorTypeNodes == null || rootOfMointorPoint == null || monitorLabelTypeNodes == null || rootOfMointorLabel == null)
+                return;
+
             monitorPointTree.DestroyMonitorPointTree(ref monitorTypeNodes, ref rootOfMointorPoint);
             monitorLabelTree.DestroyMonitorLabelTree(ref monitorLabelTypeNodes, ref rootOfMointorLabel);
             monitorData.monitorData.Clear();
         }
 
+        public void DestroyMonitorPointTree(out bool isOk)
+        {
+            if (monitorTypeNodes == null || rootOfMointorPoint == null || monitorLabelTypeNodes == null || rootOfMointorLabel == null)
+            {
+                isOk = true;
+                return;
+                
+            }
+
+            monitorPointTree.DestroyMonitorPointTree(ref monitorTypeNodes, ref rootOfMointorPoint);
+            monitorLabelTree.DestroyMonitorLabelTree(ref monitorLabelTypeNodes, ref rootOfMointorLabel);
+            monitorData.monitorData.Clear();
+            isOk = true;
+        }
+
         private const int ARGSCOUNT = 2;
+
+        //设置单个监测类型的状态，打开或者关闭
         public void SetSingleMonitorTypeNodeState(string strValue)
         {
             string[] newStr = strValue.Split(',');
@@ -345,6 +379,7 @@ namespace ShenZhen.Monitor
         
         }
 
+        //设置所有监测类型的打开或者关闭
         public void SetAllMonitorTypeNodeState(string strValue)
         {
             PointState state;
@@ -367,9 +402,22 @@ namespace ShenZhen.Monitor
             monitorLabelTree.ResetAllMonitorLabelState(ref rootOfMointorLabel);
         }
 
+        //用于监测点的删除，修改，添加后的
+        public void UpdateMonitorTree(string data_json)
+        { 
+            bool isOk = false;
+            DestroyMonitorPointTree(out isOk);
+            if (isOk)
+            {
+                CreateMonitorPointTree(data_json);
+            }
+        }
+
+
 
        
 
     }
+#endif
 }
 

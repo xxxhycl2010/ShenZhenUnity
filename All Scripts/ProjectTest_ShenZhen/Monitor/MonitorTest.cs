@@ -8,7 +8,7 @@ using ShenZhen.Monitor;
 
 namespace ShenZhenTest.Monitor
 {
-
+#if tempSave
     public class MonitorTest : MonoBehaviour
     {
         public MonitorControl monitorControl;
@@ -160,5 +160,6 @@ namespace ShenZhenTest.Monitor
             Debug.Log("tow:" + newstr[1].ToString());
         }
     }
+#endif
 
 }

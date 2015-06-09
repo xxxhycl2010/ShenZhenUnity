@@ -21,9 +21,13 @@ namespace ShenZhen.Monitor
         // Update is called once per frame
         void Update()
         {
-            float newFomat = fomat / Vector3.Distance(head.position, Camera.main.transform.position);
-            headLabel.position = WorldToUI(head.position);
-            headLabel.localScale = Vector3.one * newFomat;
+            if (gameObject.renderer.isVisible == true)
+            {
+                float newFomat = fomat / Vector3.Distance(head.position, Camera.main.transform.position);
+                headLabel.position = WorldToUI(head.position);
+                headLabel.localScale = Vector3.one * newFomat;
+            }
+         
 
         }
 

@@ -275,7 +275,7 @@ public class SceneView : MonoBehaviour
     }
 
 
-	GameObject moveReference;
+	GameObject moveReference ;
 	GameObject rotateReference;
 	GameObject referenceParent;
 	GameObject zoomReference;
@@ -289,6 +289,8 @@ public class SceneView : MonoBehaviour
 		rotateReference.transform.parent = referenceParent.transform;
 		zoomReference.transform.parent = referenceParent.transform;
 		zoomReference.transform.localPosition = initCameraPosition;
+        if (controlObj == null)
+            return;
 		moveReference.transform.rotation = Quaternion.Euler(new Vector3(0 , controlObj.eulerAngles.y , 0));
 
 

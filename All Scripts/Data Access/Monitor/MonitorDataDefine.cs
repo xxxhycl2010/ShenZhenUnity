@@ -1,9 +1,14 @@
-﻿using UnityEngine;
+﻿//这个程序暂时保留，是以前旧的版本
+
+
+
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace ShenZhen.Monitor
 {
+#if tempSave
     public enum State
     {
         Error = 0,
@@ -572,7 +577,7 @@ namespace ShenZhen.Monitor
 
     }
 
-
+#endif
 
 }
 

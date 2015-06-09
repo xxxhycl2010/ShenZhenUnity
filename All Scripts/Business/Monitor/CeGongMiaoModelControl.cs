@@ -8,13 +8,11 @@ public class CeGongMiaoModelControl : MonoBehaviour {
     public GameObject jingGai;
 	// Use this for initialization
 	void Start () {
+        jingGai.SetActive(true);
 	
 	}
 	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+
 
     public void SetJingGaiState(bool isOpen)
     {
@@ -26,5 +24,15 @@ public class CeGongMiaoModelControl : MonoBehaviour {
         {
             jingGai.SetActive(false);
         }
+    }
+
+    public void OpenJingGai()
+    {
+        jingGai.SetActive(false);
+    }
+
+    public void CloseJingGai()
+    {
+        jingGai.SetActive(true);
     }
 }

@@ -5,7 +5,7 @@ namespace ShenZhen.Monitor
 {
     public class PickMonitorPoint : MonoBehaviour
     {
-        private const string MODULEVALUE = "MonitorPnt_Info";
+        private const string MODULEVALUE = "Info_MonitorPnt";
         private int layerNum_monitor;
         void OnClickLabel(GameObject go)
         {

@@ -29,7 +29,7 @@ public class QieHuanPicture : MonoBehaviour {
 
     void OnClickButton(GameObject go)
     {
-        for (int i = 0; i < MenuObjs.Length-1; i++)
+        for (int i = 0; i < messages.Length; i++)
         {
             if (go.name == MenuObjs[i].name)
             {
